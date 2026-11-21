@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Petualangan Perkalian</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg1:#aee3ff;--bg2:#e4f9c9;--card:#ffffff;--ink:#1f2a44;--muted:#55617f;--ground:#6cc24a;--line:#dfe6f5;--dot-off:#cfd8ee;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg1:#16213f;--bg2:#1c3a35;--card:#27325a;--ink:#f1f4ff;--muted:#aeb8d8;--ground:#3f8a35;--line:#3a4775;--dot-off:#44507e;color-scheme:dark}}
+:root[data-theme="dark"]{--bg1:#16213f;--bg2:#1c3a35;--card:#27325a;--ink:#f1f4ff;--muted:#aeb8d8;--ground:#3f8a35;--line:#3a4775;--dot-off:#44507e;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{min-height:100vh;background:linear-gradient(var(--bg1),var(--bg2)) fixed;color:var(--ink);font-family:"Fredoka","Baloo 2","Comic Sans MS",system-ui,sans-serif;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10}
+.clouds i{position:fixed;font-style:normal;font-size:54px;opacity:.75;animation:drift 38s linear infinite;pointer-events:none;top:8%}
+.clouds i:nth-child(2){top:30%;font-size:40px;animation-duration:55s;animation-delay:-20s}
+.clouds i:nth-child(3){top:62%;font-size:48px;animation-duration:46s;animation-delay:-8s}
+@keyframes drift{from{transform:translateX(-90px)}to{transform:translateX(110vw)}}
+main{position:relative;max-width:560px;margin:0 auto;padding:16px 16px 40px}
+section[hidden]{display:none}
+h1{font-size:2.3rem;line-height:1.1;margin:.2em 0 .3em;text-align:center}
+h2{font-size:1.6rem;margin:.3em 0;text-align:center}
+p{color:var(--muted);text-align:center;margin:.4em 0 1em;font-size:1.05rem}
+.logo{font-size:84px;text-align:center;animation:bob 2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-14px) rotate(-6deg)}}
+.chips{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 22px}
+.chip{font:700 1.5rem/1 inherit;font-family:inherit;padding:14px 0;border:0;border-radius:16px;background:var(--card);color:var(--ink);box-shadow:0 5px 0 var(--line);cursor:pointer;transition:transform .12s}
+.chip.wide{grid-column:span 5}
+.chip:active{transform:translateY(3px)}
+.chip.on{background:#ff8a1f;color:#1f2a44;box-shadow:0 5px 0 #c4640a;transform:translateY(-2px)}
+.row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn{font:700 1.2rem/1 inherit;font-family:inherit;padding:16px 26px;border:0;border-radius:18px;color:#fff;cursor:pointer;background:#1c7ed6;box-shadow:0 6px 0 #0f4c8a;transition:transform .12s}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 #0f4c8a}
+.btn.big{background:#e8590c;box-shadow:0 6px 0 #9c3a05;font-size:1.4rem}
+.btn.big:active{box-shadow:0 2px 0 #9c3a05}
+button:focus-visible{outline:4px solid #7c4dff;outline-offset:3px}
+#snd{position:fixed;right:12px;top:calc(env(safe-area-inset-top,0px) + 10px);z-index:20;font-size:1.4rem;border:0;border-radius:50%;width:46px;height:46px;background:var(--card);cursor:pointer;box-shadow:0 4px 0 var(--line)}
+.back{font:600 1rem inherit;font-family:inherit;border:0;background:var(--card);color:var(--ink);padding:10px 14px;border-radius:14px;cursor:pointer;box-shadow:0 3px 0 var(--line)}
+.best{margin-top:20px;font-weight:600}
+/* belajar */
+.dots{display:grid;gap:6px;justify-content:center;margin:12px auto;min-height:60px;padding:12px;background:var(--card);border-radius:20px}
+.dot{width:min(24px,6.5vw);aspect-ratio:1;border-radius:50%;animation:dotin .35s backwards cubic-bezier(.3,1.6,.5,1)}
+@keyframes dotin{from{transform:scale(0)}}
+.cap{min-height:3em;font-weight:600;color:var(--ink)}
+.rows{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rw{font:600 1.15rem inherit;font-family:inherit;padding:12px;border:0;border-radius:14px;background:var(--card);color:var(--ink);cursor:pointer;box-shadow:0 3px 0 var(--line)}
+.rw.on{background:#7c4dff;color:#fff}
+/* game */
+.hud{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-right:56px;font-weight:700;font-size:1.25rem}
+.track{position:relative;height:70px;margin:18px 0 6px;border-bottom:10px solid var(--ground);border-radius:0 0 6px 6px}
+.flag{position:absolute;right:0;bottom:0;font-size:38px}
+.hero{position:absolute;bottom:0;left:calc(var(--p,0) * (100% - 90px));transition:left .6s cubic-bezier(.4,1.4,.5,1);font-size:44px;line-height:1}
+.hero span{display:inline-block}
+.hero.hop span{animation:hop .6s}
+@keyframes hop{40%{transform:translateY(-36px) rotate(-12deg)}}
+.card{background:var(--card);border-radius:24px;padding:20px 12px 14px;text-align:center;box-shadow:0 6px 0 var(--line);margin:14px 0}
+.card.shake{animation:shake .45s}
+@keyframes shake{20%,60%{transform:translateX(-10px)}40%,80%{transform:translateX(10px)}}
+.q{font-size:3.4rem;font-weight:700;letter-spacing:.02em;animation:qin .35s}
+@keyframes qin{from{transform:scale(.6);opacity:0}}
+.msg{min-height:1.6em;margin-top:4px;font-weight:600;font-size:1.2rem}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.opt{font:700 2.1rem/1 inherit;font-family:inherit;min-height:88px;border:0;border-radius:20px;color:#fff;cursor:pointer;transition:transform .12s,filter .2s}
+.opt:nth-child(1){background:#e8590c;box-shadow:0 6px 0 #9c3a05}
+.opt:nth-child(2){background:#1c7ed6;box-shadow:0 6px 0 #0f4c8a}
+.opt:nth-child(3){background:#2b8a3e;box-shadow:0 6px 0 #1a5726}
+.opt:nth-child(4){background:#9c36b5;box-shadow:0 6px 0 #65207a}
+.opt:active{transform:translateY(4px)}
+.opt.ok{animation:ok .5s;outline:5px solid #ffd43b}
+.opt.bad{filter:grayscale(1) brightness(.7);animation:shake .45s}
+@keyframes ok{40%{transform:scale(1.12)}}
+.p{position:fixed;pointer-events:none;font-size:24px;z-index:50;animation:pop .9s ease-out forwards}
+@keyframes pop{from{transform:translate(-50%,-50%) scale(.4);opacity:1}to{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1.2);opacity:0}}
+/* akhir */
+.stars{font-size:3.4rem;text-align:center;margin-top:30px}
+.stars span{display:inline-block;animation:starin .6s backwards cubic-bezier(.3,1.7,.5,1)}
+@keyframes starin{from{transform:scale(0) rotate(-200deg)}}
+#end .row{margin-top:20px}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-iteration-count:1!important;transition-duration:.01s!important}}
+</style>
+</head>
+<body>
+<div class="clouds" aria-hidden="true"><i>☁️</i><i>☁️</i><i>☁️</i></div>
+<button id="snd" aria-label="Suara hidup atau mati">🔊</button>
+<main>
+<section id="menu">
+  <div class="logo">🚀</div>
+  <h1>Petualangan Perkalian</h1>
+  <p>Pilih tabel perkalian, lalu bantu si kelinci berlari ke garis finis!</p>
+  <div id="chips" class="chips"></div>
+  <div class="row">
+    <button class="btn big" id="play">🎮 Main</button>
+    <button class="btn" id="learnBtn">📖 Belajar</button>
+  </div>
+  <p class="best" id="best"></p>
+</section>
+
+<section id="learn" hidden>
+  <button class="back" data-go="menu">← Menu</button>
+  <h2>Belajar Tabel <span id="ln">2</span></h2>
+  <div id="lchips" class="chips"></div>
+  <div id="dots" class="dots" aria-hidden="true"></div>
+  <p id="cap" class="cap">Ketuk sebuah baris untuk melihat gambarnya!</p>
+  <div id="rows" class="rows"></div>
+</section>
+
+<section id="game" hidden>
+  <div class="hud"><button class="back" data-go="menu" aria-label="Keluar">✕</button><span id="hearts"></span><span id="score">⭐ 0</span></div>
+  <div class="track"><div id="hero" class="hero"><span>🐰</span></div><span class="flag">🏁</span></div>
+  <div id="card" class="card"><div id="q" class="q"></div><div id="msg" class="msg"></div></div>
+  <div id="opts" class="opts"></div>
+</section>
+
+<section id="end" hidden>
+  <div id="stars" class="stars"></div>
+  <h2 id="et"></h2>
+  <p id="es"></p>
+  <div class="row">
+    <button id="again" class="btn big">🔁 Main lagi</button>
+    <button class="btn" data-go="menu">🏠 Menu</button>
+  </div>
+</section>
+</main>
+
+<script>
+const $=s=>document.querySelector(s);
+const rand=n=>Math.floor(Math.random()*n);
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=rand(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
+const SCREENS=['menu','learn','game','end'];
+function show(id){SCREENS.forEach(s=>$('#'+s).hidden=s!==id);window.scrollTo(0,0);if(id==='menu')showBest()}
+
+/* suara */
+let AC,mute=false;
+function beep(f,len=.22){if(mute)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type='triangle';o.frequency.value=f;g.gain.value=.08;o.connect(g);g.connect(AC.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+len);o.stop(AC.currentTime+len)}catch(e){}}
+$('#snd').onclick=()=>{mute=!mute;$('#snd').textContent=mute?'🔇':'🔊'};
+
+/* skor terbaik */
+let best=0;
+try{best=+localStorage.getItem('pk-best')||0}catch(e){}
+function showBest(){$('#best').textContent=best?'🏆 Skor terbaik: '+best:'Ayo cetak skor pertamamu!'}
+
+/* pilihan tabel */
+let table=0;
+function buildChips(el,withRandom,get,set){
+  el.innerHTML='';
+  for(let i=1;i<=10;i++)el.insertAdjacentHTML('beforeend',`<button class="chip" data-n="${i}">${i}</button>`);
+  if(withRandom)el.insertAdjacentHTML('beforeend','<button class="chip wide" data-n="0">🎲 Acak 1–10</button>');
+  const mark=()=>[...el.children].forEach(c=>c.classList.toggle('on',+c.dataset.n===get()));
+  el.onclick=e=>{const b=e.target.closest('.chip');if(!b)return;set(+b.dataset.n);mark();beep(600,.12)};
+  mark();
+}
+buildChips($('#chips'),true,()=>table,v=>table=v);
+
+/* belajar */
+let ln=2,li=0;
+function renderLearn(){
+  $('#ln').textContent=ln;
+  buildChips($('#lchips'),false,()=>ln,v=>{ln=v;li=0;renderLearn()});
+  $('#rows').innerHTML=Array.from({length:10},(_,k)=>`<button class="rw" data-i="${k+1}">${ln} × ${k+1} = ${ln*(k+1)}</button>`).join('');
+  $('#dots').innerHTML='';$('#dots').style.gridTemplateColumns='';
+  $('#cap').textContent='Ketuk sebuah baris untuk melihat gambarnya!';
+}
+$('#rows').onclick=e=>{
+  const b=e.target.closest('.rw');if(!b)return;
+  const i=+b.dataset.i;
+  [...$('#rows').children].forEach(c=>c.classList.toggle('on',c===b));
+  const d=$('#dots');d.style.gridTemplateColumns=`repeat(${ln},auto)`;
+  let h='';
+  for(let r=0;r<i;r++)for(let c=0;c<ln;c++)h+=`<i class="dot" style="background:hsl(${r*38} 85% 52%);animation-delay:${(r*ln+c)*28}ms"></i>`;
+  d.innerHTML=h;
+  $('#cap').textContent=`${i} baris, tiap baris ada ${ln} bola. Jadi ${ln} × ${i} = ${ln*i}`;
+  beep(500+i*40,.15);
+};
+$('#learnBtn').onclick=()=>{ln=table||2;renderLearn();show('learn')};
+
+/* game */
+let Q=[],qi=0,score=0,lives=3,streak=0,right=0,lock=false;
+function makeChoices(ans,a,b){
+  const s=new Set([ans]);
+  for(const c of shuffle([ans+a,ans-a,ans+b,ans-b,ans+1,ans-1,ans+2,ans-2,ans+10,ans-10])){if(s.size>=4)break;if(c>0)s.add(c)}
+  let k=3;while(s.size<4)s.add(ans+k++);
+  return shuffle([...s]);
+}
+function startGame(){
+  let pairs=[];
+  if(table){for(let i=1;i<=10;i++)pairs.push([table,i])}
+  else{const set=new Set();while(set.size<10)set.add((1+rand(10))+'x'+(1+rand(10)));pairs=[...set].map(s=>s.split('x').map(Number))}
+  Q=shuffle(pairs).map(([a,b])=>Math.random()<.5?[a,b]:[b,a]).map(([a,b])=>({a,b,ans:a*b,ch:makeChoices(a*b,a,b)}));
+  qi=0;score=0;lives=3;streak=0;right=0;lock=false;
+  show('game');hud();$('#hero').style.setProperty('--p',0);renderQ();
+}
+function hud(){$('#hearts').textContent='❤️'.repeat(lives)+'🖤'.repeat(3-lives);$('#score').textContent='⭐ '+score}
+function renderQ(){
+  const q=Q[qi];
+  $('#q').textContent=`${q.a} × ${q.b} = ?`;
+  $('#q').style.animation='none';void $('#q').offsetWidth;$('#q').style.animation='';
+  $('#msg').textContent=`Soal ${qi+1} dari 10`;
+  $('#opts').innerHTML=q.ch.map(v=>`<button class="opt" data-v="${v}">${v}</button>`).join('');
+  lock=false;
+}
+function burst(el,em){
+  const r=el.getBoundingClientRect();
+  for(let i=0;i<14;i++){
+    const s=document.createElement('span');s.className='p';s.textContent=em[i%em.length];
+    s.style.left=r.left+r.width/2+'px';s.style.top=r.top+r.height/2+'px';
+    const ang=Math.random()*6.28,d=60+Math.random()*90;
+    s.style.setProperty('--dx',Math.cos(ang)*d+'px');s.style.setProperty('--dy',Math.sin(ang)*d-40+'px');
+    document.body.appendChild(s);setTimeout(()=>s.remove(),950);
+  }
+}
+$('#opts').onclick=e=>{
+  const btn=e.target.closest('.opt');if(!btn||lock)return;
+  lock=true;
+  const q=Q[qi],v=+btn.dataset.v,ok=v===q.ans;
+  if(ok){
+    btn.classList.add('ok');right++;streak++;score+=10+(streak>=3?5:0);
+    const hero=$('#hero');hero.style.setProperty('--p',right/10);hero.classList.remove('hop');void hero.offsetWidth;hero.classList.add('hop');
+    burst(btn,['⭐','✨','🌟']);beep(880);
+    $('#msg').textContent=streak>=3?`🔥 ${streak} benar berturut-turut! +15`:['Hebat! 🎉','Benar! ⭐','Pintar! 👏','Keren! 🚀'][rand(4)];
+  }else{
+    btn.classList.add('bad');lives--;streak=0;beep(200,.35);
+    [...$('#opts').children].find(b=>+b.dataset.v===q.ans).classList.add('ok');
+    const c=$('#card');c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake');
+    $('#msg').textContent=`Hampir! ${q.a} × ${q.b} = ${q.ans}`;
+  }
+  hud();
+  setTimeout(()=>{qi++;(lives<=0||qi>=10)?finish():renderQ()},ok?900:1800);
+};
+function finish(){
+  const n=right>=9?3:right>=6?2:right>=3?1:0;
+  $('#stars').innerHTML='⭐'.repeat(n).split('').map((s,i)=>`<span style="animation-delay:${i*250}ms">${s}</span>`).join('')+'<span style="opacity:.35;animation-delay:900ms">☆</span>'.repeat(3-n);
+  $('#et').textContent=n===3?'Luar biasa! Kamu jagoan perkalian!':n===2?'Bagus sekali!':n===1?'Lumayan, ayo coba lagi!':'Jangan menyerah, belajar dulu yuk!';
+  $('#es').textContent=`Benar ${right} dari 10 soal. Skor: ${score}`;
+  if(score>best){best=score;try{localStorage.setItem('pk-best',best)}catch(e){}$('#es').textContent+=' 🏆 Skor terbaik baru!'}
+  show('end');
+  if(n>0){setTimeout(()=>burst($('#stars'),['🎉','⭐','🎊','✨']),300);beep(988,.4)}else beep(300,.4);
+}
+$('#play').onclick=startGame;
+$('#again').onclick=startGame;
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g){show(g.dataset.go);beep(520,.1)}});
+showBest();
+</script>
+</body>
+</html>
